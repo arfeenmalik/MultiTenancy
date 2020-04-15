@@ -98,7 +98,7 @@ namespace MultiTenancy.Administration.Entities
             get { return Fields.LastDirectoryUpdate[this]; }
             set { Fields.LastDirectoryUpdate[this] = value; }
         }
-
+        [ReadPermission(PermissionKeys.Tenants)]
         [DisplayName("TenantID"), ForeignKey("Tenants", "TenantId"), LeftJoin("tnt")]
         [LookupEditor(typeof(TenantsRow))]
         public Int32? TenantId
