@@ -34,6 +34,11 @@ namespace MultiTenancy.Administration.Repositories
             foreach (var p in request.Permissions)
                 newList[p.PermissionKey] = p.Granted ?? false;
 
+            var allowedKeys = ListPermissionKeys()
+            .Entities.ToDictionary(x => x);
+            if (newList.Keys.Any(x => !allowedKeys.ContainsKey(x)))
+                throw new AccessViolationException();
+
             if (oldList.Count == newList.Count &&
                 oldList.All(x => newList.ContainsKey(x.Key) && newList[x.Key] == x.Value))
                 return new SaveResponse();
@@ -241,6 +246,8 @@ namespace MultiTenancy.Administration.Repositories
                                 ProcessAttributes<PermissionAttributeBase>(result, member, x => x.Permission);
                     }
                 }
+
+                result.Remove(Administration.PermissionKeys.Tenants);
 
                 result.Remove("*");
                 result.Remove("?");
